@@ -93,33 +93,32 @@ Keycloak is the identity provider. It runs locally via Docker.
 docker-compose up -d
 ```
 
-Wait about 30 seconds, then go to `http://localhost:8080`.
 
 **Configure Keycloak (one-time setup):**
 
 1. Log in to the Admin Console
-   - Username: `admin`
-   - Password: `admin`
+   - Set Username
+   - Set Password
 
 2. Create a Realm
    - Click the dropdown (top-left) → **Create Realm**
-   - Name: `pulseboard`
+   - Set Name
    - Click **Create**
 
 3. Create a Client
    - Go to **Clients** → **Create client**
-   - Client ID: `pulseboard-frontend`
-   - Client type: `OpenID Connect`
+   - Create Client_ID
+   - Create Client type
    - Click **Next**
    - Enable **Standard flow**
    - Click **Next**
-   - Valid redirect URIs: `http://localhost:5173/*`
-   - Web origins: `http://localhost:5173`
+   - Valid redirect URIs:
+   - Web origins: 
    - Click **Save**
 
 4. Create a Test User
    - Go to **Users** → **Add user**
-   - Username: `testuser`
+   - Set Username
    - Click **Create**
    - Go to **Credentials** tab → Set password → Turn OFF **Temporary**
 
@@ -154,8 +153,8 @@ cp .env.example .env
 Edit `backend/.env` with your values:
 ```env
 DATABASE_URL=""
-KEYCLOAK_REALM_URL="http://localhost:8080/realms/pulseboard"
-KEYCLOAK_CLIENT_ID="pulseboard-frontend"
+KEYCLOAK_REALM_URL=""
+KEYCLOAK_CLIENT_ID=""
 PORT=3001
 ```
 
@@ -201,17 +200,16 @@ Keycloak ready when you see: `Keycloak 24.0.1 on /`
 cd backend
 npx ts-node src/index.ts
 ```
-Backend ready when you see: `Backend running on port 3001`
+
 
 **Terminal 3 — Frontend**
 ```bash
 cd frontend
 npm run dev
 ```
-Frontend ready when you see: `VITE ready on http://localhost:5173`
 
-Then open `http://localhost:5173` in your browser. You'll be redirected to the Keycloak login page — log in with your test user.
 
+T
 ---
 
 ## Environment Variables
