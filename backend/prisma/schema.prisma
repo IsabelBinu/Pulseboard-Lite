@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  keycloakId String   @unique
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  uploads    Upload[]
+}
+
+model Upload {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id])
+  filename   String
+  rowCount   Int
+  importedAt DateTime       @default(now())
+  records    HealthRecord[]
+}
+
+model HealthRecord {
+  id            String   @id @default(uuid())
+  uploadId      String
+  upload        Upload   @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  date          DateTime
+  sleepHours    Float?
+  hrvMs         Float?
+  restingHr     Float?
+  steps         Int?
+  activeMinutes Int?
+  workoutType   String?
+  distanceKm    Float?
+  calories      Int?
+}
