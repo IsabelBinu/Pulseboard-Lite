@@ -5,6 +5,7 @@ import cors from 'cors';
 import { requireAuth } from './middleware/auth';
 import templateRouter from './routes/template';
 import uploadsRouter from './routes/uploads';
+import dashboardRouter from './routes/dashboard';
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173' }));
@@ -19,6 +20,7 @@ app.get('/health', (req, res) => {
 app.use('/api', requireAuth);
 app.use('/api/template', templateRouter);
 app.use('/api/uploads', uploadsRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.get('/api/me', (req, res) => {
   res.json({ message: 'You are authenticated!' });

@@ -5,6 +5,34 @@ import Papa from 'papaparse';
 import { z } from 'zod';
 import prisma from '../lib/prisma';
 
+
+// Helper to parse dates in multiple formats
+function parseDate(dateStr: string): Date {
+  if (!dateStr) throw new Error('Empty date');
+
+  // Try direct parse first (works for YYYY-MM-DD)
+  const direct = new Date(dateStr);
+  if (!isNaN(direct.getTime())) return direct;
+
+  // Try DD-MM-YYYY format (Excel default in NZ/AU)
+  const ddmmyyyy = dateStr.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+  if (ddmmyyyy) {
+    const [, day, month, year] = ddmmyyyy;
+    const d = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // Try DD/MM/YY format
+  const ddmmyy = dateStr.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2})$/);
+  if (ddmmyy) {
+    const [, day, month, year] = ddmmyy;
+    const d = new Date(`20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  throw new Error(`Cannot parse date: ${dateStr}`);
+}
+
 const router = Router();
 
 
@@ -118,7 +146,7 @@ router.post('/import', async (req: Request, res: Response) => {
 
     // Filter out duplicate dates
     const newRows = validRows.filter((row: any) => {
-      const rowDate = new Date(row.date).toISOString().split('T')[0];
+      const rowDate = parseDate(row.date).toISOString().split('T')[0];
       return !existingDateStrings.has(rowDate);
     });
 
@@ -137,7 +165,7 @@ router.post('/import', async (req: Request, res: Response) => {
     await prisma.healthRecord.createMany({
       data: newRows.map((row: any) => ({
         uploadId: uploadRecord.id,
-        date: new Date(row.date),
+        date: parseDate(row.date),
         sleepHours: row.sleep_hours,
         hrvMs: row.hrv_ms,
         restingHr: row.resting_hr,
@@ -161,5 +189,79 @@ router.post('/import', async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Failed to import data' });
   }
 });
+// ── GET /api/uploads/history — get all uploads for current user
+router.get('/history', async (req: Request, res: Response) => {
+  try {
+    const authPayload = (req as any).auth;
+    const keycloakId = authPayload.sub;
 
+    // Find user
+    const user = await prisma.user.findUnique({ where: { keycloakId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get all uploads for this user, newest first
+    const uploads = await prisma.upload.findMany({
+      where: { userId: user.id },
+      orderBy: { importedAt: 'desc' },
+      select: {
+        id: true,
+        filename: true,
+        rowCount: true,
+        importedAt: true,
+      },
+    });
+
+    return res.json({ uploads });
+
+  } catch (error) {
+    console.error('History error:', error);
+    return res.status(500).json({ error: 'Failed to fetch upload history' });
+  }
+});
+
+// ── DELETE /api/uploads/:id — delete an upload and its health records
+router.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const authPayload = (req as any).auth;
+    const keycloakId = authPayload.sub;
+
+    // Extract and explicitly type as string
+    const uploadId: string = String(req.params.id);
+
+    // Find user
+    const user = await prisma.user.findUnique({ where: { keycloakId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify the upload belongs to this user
+    const upload = await prisma.upload.findFirst({
+      where: {
+        id: { equals: uploadId },
+        userId: user.id
+      },
+    });
+
+    if (!upload) {
+      return res.status(404).json({ error: 'Upload not found' });
+    }
+
+    // Delete upload — HealthRecords deleted automatically via CASCADE
+    await prisma.upload.delete({
+      where: { id: String(uploadId) }
+    });
+
+    return res.json({
+      success: true,
+      message: `Deleted ${upload.rowCount} health records`,
+    });
+
+  } catch (error) {
+    console.error('Delete error:', error);
+    return res.status(500).json({ error: 'Failed to delete upload' });
+  }
+});
 export default router;
+
