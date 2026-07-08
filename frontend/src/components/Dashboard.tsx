@@ -6,6 +6,7 @@ import SleepChart from './SleepChart';
 import HrvChart from './HrvChart';
 import RestingHrChart from './RestingHrChart';
 import ActivityChart from './ActivityChart';
+import RecoveryScore from './RecoveryScore';
 
 interface DashboardData {
   empty: boolean;
@@ -16,6 +17,7 @@ interface DashboardData {
     avgSteps: number | null;
   };
   chartData?: any[];
+  recoveryScore?: any;  
   totalRecords?: number;
 }
 
@@ -110,6 +112,8 @@ export default function Dashboard() {
 
       {/* Summary Cards */}
       {data.summaryCards && <SummaryCards data={data.summaryCards} />}
+	  
+	  {data.recoveryScore && <RecoveryScore data={data.recoveryScore} />}
 
       {/* Charts */}
       {data.chartData && (

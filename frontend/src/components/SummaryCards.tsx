@@ -1,3 +1,5 @@
+import { useWindowWidth } from '../hooks/useWindowWidth';
+
 interface SummaryData {
   avgSleepHours: number | null;
   avgHrv: number | null;
@@ -10,18 +12,22 @@ interface Props {
 }
 
 const cards = [
-  { key: 'avgSleepHours', label: 'Avg Sleep',      unit: 'hrs',  icon: '😴', color: '#6366F1' },
-  { key: 'avgHrv',        label: 'Avg HRV',         unit: 'ms',   icon: '💚', color: '#10B981' },
-  { key: 'avgRestingHr',  label: 'Avg Resting HR',  unit: 'bpm',  icon: '❤️', color: '#EF4444' },
-  { key: 'avgSteps',      label: 'Avg Steps',        unit: 'steps',icon: '🏃', color: '#F59E0B' },
+  { key: 'avgSleepHours', label: 'Avg Sleep',     unit: 'hrs',   icon: '😴', color: '#6366F1' },
+  { key: 'avgHrv',        label: 'Avg HRV',        unit: 'ms',    icon: '💚', color: '#10B981' },
+  { key: 'avgRestingHr',  label: 'Avg Resting HR', unit: 'bpm',   icon: '❤️', color: '#EF4444' },
+  { key: 'avgSteps',      label: 'Avg Steps',      unit: 'steps', icon: '🏃', color: '#F59E0B' },
 ];
 
 export default function SummaryCards({ data }: Props) {
+  // ✅ Hook called INSIDE the function — correct
+  const width = useWindowWidth();
+  const isMobile = width < 768;
+
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '16px',
+      gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+      gap: isMobile ? '12px' : '16px',
       marginBottom: '32px',
     }}>
       {cards.map(card => {
