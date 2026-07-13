@@ -43,3 +43,10 @@ model HealthRecord {
   distanceKm    Float?
   calories      Int?
 }
+model WeeklySummary {
+  id        String   @id @default(uuid())
+  userId    String
+  weekStart DateTime
+  content   String
+  createdAt DateTime @default(now())
+}
