@@ -37,7 +37,7 @@ The dashboard answers three core questions:
 - 🏃 **How active am I?**
 - 💚 **Am I recovering well?**
 
----
+
 ---
 
 ## AI Features
@@ -45,23 +45,23 @@ The dashboard answers three core questions:
 PulseBoard Lite includes four AI-powered features built on **Groq + Qwen3 32B**:
 
 ### 🤖 AI Health Coach
-Analyses the user's last 14 days of health data and generates personalised written insights — specific to their actual numbers, not generic health advice. Triggered on demand via a "Generate Insights" button.
+Analyses the user's last 14 days of health data and generates personalised written insights - specific to their actual numbers, not generic health advice. Triggered on demand via a "Generate Insights" button.
 
 ### 💬 RAG Health Chatbot
-A floating chat interface where users ask natural language questions about their own data. Uses **Retrieval Augmented Generation (RAG)** — all health records are retrieved as context before every response, grounding the AI in real data.
+A floating chat interface where users ask natural language questions about their own data. Uses **Retrieval Augmented Generation (RAG)** - all health records are retrieved as context before every response, grounding the AI in real data.
 
 Example questions:
 - _"What was my best recovery week?"_
 - _"Am I overtraining?"_
 - _"How has my sleep trended this month?"_
 
-Supports multi-turn conversation — follow-up questions work because the full conversation history is passed on each request.
+Supports multi-turn conversation - follow-up questions work because the full conversation history is passed on each request.
 
 ### ⚠️ Anomaly Detection
-Automatically scans health records using **Z-score analysis** — flagging values more than 2 standard deviations from the user's 30-day baseline. Anomalies are sent to Groq for plain-English explanation. Expands/collapses on click.
+Automatically scans health records using **Z-score analysis** - flagging values more than 2 standard deviations from the user's 30-day baseline. Anomalies are sent to Groq for plain-English explanation. Expands/collapses on click.
 
 ### 📝 Weekly AI Summary
-A coach-style weekly health debrief generated every Monday. Covers the week's overall assessment, standout moments, biggest opportunity for improvement, and a recommendation for the coming week. **Cached in the database** — generated once per week and served instantly on repeat visits.
+A coach-style weekly health debrief generated every Monday. Covers the week's overall assessment, standout moments, biggest opportunity for improvement, and a recommendation for the coming week. **Cached in the database** - generated once per week and served instantly on repeat visits.
 
 ---
 
@@ -70,7 +70,6 @@ A coach-style weekly health debrief generated every Monday. Covers the week's ov
 | Layer | Tool |
 |---|---|
 | Frontend | React + TypeScript + Vite |
-| UI |   |
 | Charts | Recharts |
 | Auth | Keycloak (OIDC Authorization Code Flow + PKCE) |
 | Backend | Node.js + Express |
@@ -79,8 +78,6 @@ A coach-style weekly health debrief generated every Monday. Covers the week's ov
 | CSV Parsing | PapaParse |
 | Validation | Zod |
 | AI / LLM | Groq API + Qwen3 32B |
-| Frontend Hosting |  |
-| Backend Hosting |  |
 | Local Auth Server | Keycloak via Docker |
 
 
@@ -163,7 +160,7 @@ docker-compose up -d
    - Region:  closest to you
 3. Wait for provisioning
 4. Go to **Connect**  → **Transaction pooler** tab
-5. Copy the URI — Set it as the DATABASE_URL
+5. Copy the URI - Set it as the DATABASE_URL
    
 ---
 
@@ -209,10 +206,10 @@ npx prisma generate
 ```
 
 This creates three tables in your Supabase database:
-- `User` — stores Keycloak user identity
-- `Upload` — tracks each CSV import batch
-- `HealthRecord` — stores individual health data rows
-- `WeeklySummary` — caches AI-generated weekly summaries
+- `User` - stores Keycloak user identity
+- `Upload` - tracks each CSV import batch
+- `HealthRecord` - stores individual health data rows
+- `WeeklySummary` - caches AI-generated weekly summaries
 
 ---
 
